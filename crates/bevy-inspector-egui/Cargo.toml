@@ -66,7 +66,7 @@ bevy = { version = "0.14.0", default-features = false, features = [
     "tonemapping_luts",
     "ktx2",
 ] }
-egui_dock = "0.13"
+egui_dock = { git = "https://github.com/Adanos020/egui_dock.git", branch = "egui-0.29"}
 # transform-gizmo-egui = "0.1"
 # bevy_mod_picking = { git = "https://github.com/aevyrie/bevy_mod_picking", rev = "554649a951689dce66d0d759839b326874e8826f", default-features = false, features = ["backend_raycast", "backend_egui", "backend_sprite"] }
 # bevy_framepace = "0.11"
