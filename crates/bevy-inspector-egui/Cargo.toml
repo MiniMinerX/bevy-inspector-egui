@@ -55,7 +55,8 @@ bevy_pbr = { version = "0.15.0", optional = true }
 bevy_image = { version = "0.15.0", optional = true }
 
 egui = "0.30"
-bevy_egui = { git = "https://github.com/MiniMinerX/bevy_egui.git", branch = "fix_egui30"}
+# bevy_egui = { git = "https://github.com/MiniMinerX/bevy_egui.git", branch = "fix_egui30"}
+bevy_egui = "0.32"
 
 bytemuck = "1.16.0"
 image = { version = "0.25", default-features = false }
