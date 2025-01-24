@@ -9,7 +9,6 @@ use bevy_inspector_egui::DefaultInspectorConfigPlugin;
 use std::any::TypeId;
 // use bevy_mod_picking::backends::egui::EguiPointer;
 // use bevy_mod_picking::prelude::*;
-use bevy_egui::EguiSet;
 use bevy_reflect::TypeRegistry;
 use bevy_render::camera::{CameraProjection, Viewport};
 use bevy_window::{PrimaryWindow, Window};
@@ -35,8 +34,8 @@ fn main() {
         .add_systems(
             PostUpdate,
             show_ui_system
-                .before(EguiSet::ProcessOutput)
-                .before(bevy_egui::systems::end_pass_system)
+                .before(bevy_egui::EguiPostUpdateSet::ProcessOutput)
+                .before(bevy_egui::EguiPostUpdateSet::EndPass)
                 .before(bevy::transform::TransformSystem::TransformPropagate),
         )
         .add_systems(PostUpdate, set_camera_viewport.after(show_ui_system))
@@ -104,7 +103,7 @@ fn show_ui_system(world: &mut World) {
 fn set_camera_viewport(
     ui_state: Res<UiState>,
     primary_window: Query<&mut Window, With<PrimaryWindow>>,
-    egui_settings: Query<&bevy_egui::EguiSettings>,
+    egui_settings: Query<&bevy_egui::EguiContextSettings>,
     mut cameras: Query<&mut Camera, With<MainCamera>>,
 ) {
     let mut cam = cameras.single_mut();
