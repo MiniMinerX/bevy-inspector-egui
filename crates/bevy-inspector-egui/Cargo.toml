@@ -61,7 +61,8 @@ bevy_core_pipeline = { version = "0.17.0-dev", git = "https://github.com/bevyeng
 bevy_pbr = { version = "0.17.0-dev", git = "https://github.com/bevyengine/bevy.git", optional = true }
 bevy_image = { version = "0.17.0-dev", git = "https://github.com/bevyengine/bevy.git", optional = true }
 
-egui = { version = "0.32", default-features = false, git = "https://github.com/pindash-io/egui.git", branch = "accesskit" }
+#egui = { version = "0.32", default-features = false, git = "https://github.com/pindash-io/egui.git", branch = "accesskit" }
+egui = { version = "0.32", default-features = false }
 
 bevy_egui = {git = "https://github.com/MiniMinerX/bevy_egui", branch = "dev-0.17", default-features = false }
 
