@@ -996,7 +996,8 @@ impl InspectorUi<'_, '_> {
 
         egui::Grid::new(id).show(ui, |ui| {
             for i in 0..map.len() {
-                if let Some((key, value)) = map.get_at_mut(i) {
+                if let Some(value) = map.get_mut(&i) {
+                    let key = &i;
                     self.ui_for_reflect_readonly_with_options(key, ui, id.with(i), &());
                     changed |= self.ui_for_reflect_with_options(value, ui, id.with(i), &());
                     if remove_button(ui).on_hover_text("Remove element").clicked() {
@@ -1012,7 +1013,8 @@ impl InspectorUi<'_, '_> {
         if let Some(index) = to_delete {
             // Can't have both an immutable borrow of the map's key,
             // and mutably borrow the map to delete the element.
-            let cloned_key = map.get_at(index).map(|(key, _)| key.to_dynamic());
+            let key = &index;
+            let cloned_key = map.get(&index).map(|(_)| key.to_dynamic());
             if let Some(key) = cloned_key {
                 map.remove(key.as_ref());
             }

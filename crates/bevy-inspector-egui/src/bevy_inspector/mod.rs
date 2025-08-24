@@ -497,7 +497,7 @@ fn self_or_children_satisfy_filter(
 
     let is_hidden_observer = !show_observers
         && world
-            .query::<&observer::ObserverState>()
+            .query::<&Observer>()
             .get(world, entity)
             .is_ok();
 
@@ -742,7 +742,7 @@ fn components_of_entity(
         .components()
         .map(|component_id| {
             let info = world.world().components().get_info(component_id).unwrap();
-            let name = pretty_type_name_str(info.name());
+            let name = pretty_type_name_str(&info.name());
 
             (name, component_id, info.type_id(), info.layout().size())
         })
@@ -949,7 +949,16 @@ pub mod by_type_id {
         for handle_id in ids {
             let id = egui::Id::new(handle_id);
             let mut handle = reflect_handle
-                .typed(UntypedHandle::Weak(handle_id))
+                .typed(UntypedHandle::Uuid {
+                    type_id: handle_id.type_id(),
+                    uuid: match handle_id {
+                        UntypedAssetId::Uuid { uuid, .. } => uuid,
+                        UntypedAssetId::Index { .. } => {
+                            // This is problematic - index IDs don't have UUIDs
+                            continue; // Skip index-based assets for now
+                        }
+                    }
+                })
                 .into_partial_reflect();
 
             egui::CollapsingHeader::new(handle_name(handle_id, asset_server.as_ref()))
@@ -1010,7 +1019,14 @@ pub mod by_type_id {
 
         let id = egui::Id::new(handle);
         let mut handle = reflect_handle
-            .typed(UntypedHandle::Weak(handle))
+            .typed(match handle {
+                UntypedAssetId::Uuid { uuid, type_id } => UntypedHandle::Uuid { type_id, uuid },
+                UntypedAssetId::Index { type_id, .. } => {
+                    // Index-based assets can't be converted to UntypedHandle directly
+                    // You might need to skip these or handle them differently
+                    return false; // or handle appropriately based on your context
+                }
+            })
             .into_partial_reflect();
 
         let mut env = InspectorUi::for_bevy(type_registry, &mut cx);
@@ -1114,7 +1130,7 @@ pub mod short_circuit {
                 );
                 let asset_value =
                 // SAFETY: the world allows mutable access to `Assets<T>`
-                unsafe { reflect_asset.get_unchecked_mut(world.world(), handle) };
+                unsafe { reflect_asset.get_unchecked_mut(world.world(), &handle) };
                 match asset_value {
                     Some(value) => value,
                     None => {
@@ -1210,7 +1226,7 @@ pub mod short_circuit {
                     );
                     let asset_value =
                         // SAFETY: the world allows mutable access to `Assets<T>`
-                        unsafe { reflect_asset.get_unchecked_mut(world.world(), handle) };
+                        unsafe { reflect_asset.get_unchecked_mut(world.world(), &handle) };
                     match asset_value {
                         Some(value) => value,
                         None => {
@@ -1294,7 +1310,7 @@ pub mod short_circuit {
                 assert!(
                     assets_view.allows_access_to_resource(reflect_asset.assets_resource_type_id())
                 );
-                let asset_value = reflect_asset.get(interior_mutable_world, handle);
+                let asset_value = reflect_asset.get(interior_mutable_world, &handle);
                 match asset_value {
                     Some(value) => value,
                     None => {

@@ -1,6 +1,6 @@
+use bevy_asset::RenderAssetUsages;
 use bevy_image::{Image, TextureFormatPixelInfo};
 use bevy_render::{
-    render_asset::RenderAssetUsages,
     render_resource::{Extent3d, TextureDimension, TextureFormat},
 };
 use bytemuck::cast_slice;
@@ -81,26 +81,30 @@ pub fn from_dynamic(dyn_img: DynamicImage, is_srgb: bool) -> Image {
             data = cast_slice(&raw_data).to_owned();
         }
         DynamicImage::ImageRgb16(image) => {
-            width = image.width();
-            height = image.height();
-            format = TextureFormat::Rgba16Uint;
+                width = image.width();
+                height = image.height();
+                format = TextureFormat::Rgba16Uint;
 
-            let mut local_data =
-                Vec::with_capacity(width as usize * height as usize * format.pixel_size());
+                if let Ok(pixel_size) = format.pixel_size() {
+                let mut local_data =
+                    Vec::with_capacity(width as usize * height as usize * pixel_size);
 
-            for pixel in image.into_raw().chunks_exact(3) {
-                let r = pixel[0];
-                let g = pixel[1];
-                let b = pixel[2];
-                let a = u16::MAX;
+                for pixel in image.into_raw().chunks_exact(3) {
+                    let r = pixel[0];
+                    let g = pixel[1];
+                    let b = pixel[2];
+                    let a = u16::MAX;
 
-                local_data.extend_from_slice(&r.to_ne_bytes());
-                local_data.extend_from_slice(&g.to_ne_bytes());
-                local_data.extend_from_slice(&b.to_ne_bytes());
-                local_data.extend_from_slice(&a.to_ne_bytes());
+                    local_data.extend_from_slice(&r.to_ne_bytes());
+                    local_data.extend_from_slice(&g.to_ne_bytes());
+                    local_data.extend_from_slice(&b.to_ne_bytes());
+                    local_data.extend_from_slice(&a.to_ne_bytes());
+                }
+
+                data = local_data;
+            } else {
+                data = Vec::new();
             }
-
-            data = local_data;
         }
         DynamicImage::ImageRgba16(i) => {
             width = i.width();
@@ -116,22 +120,28 @@ pub fn from_dynamic(dyn_img: DynamicImage, is_srgb: bool) -> Image {
             height = image.height();
             format = TextureFormat::Rgba32Float;
 
-            let mut local_data =
-                Vec::with_capacity(width as usize * height as usize * format.pixel_size());
+            if let Ok(pixel_size) = format.pixel_size() {
+                let mut local_data =
+                    Vec::with_capacity(width as usize * height as usize * pixel_size);
 
-            for pixel in image.into_raw().chunks_exact(3) {
-                let r = pixel[0];
-                let g = pixel[1];
-                let b = pixel[2];
-                let a = u16::MAX;
+                for pixel in image.into_raw().chunks_exact(3) {
+                    let r = pixel[0];
+                    let g = pixel[1];
+                    let b = pixel[2];
+                    let a = u16::MAX;
 
-                local_data.extend_from_slice(&r.to_ne_bytes());
-                local_data.extend_from_slice(&g.to_ne_bytes());
-                local_data.extend_from_slice(&b.to_ne_bytes());
-                local_data.extend_from_slice(&a.to_ne_bytes());
+                    local_data.extend_from_slice(&r.to_ne_bytes());
+                    local_data.extend_from_slice(&g.to_ne_bytes());
+                    local_data.extend_from_slice(&b.to_ne_bytes());
+                    local_data.extend_from_slice(&a.to_ne_bytes());
+                }
+
+                data = local_data;
+            } else {
+                data = Vec::new();
             }
 
-            data = local_data;
+            
         }
         DynamicImage::ImageRgba32F(image) => {
             width = image.width();

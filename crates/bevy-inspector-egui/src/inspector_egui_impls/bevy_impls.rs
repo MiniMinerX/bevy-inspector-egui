@@ -1,14 +1,17 @@
+#[cfg(feature = "bevy_render")]
+use bevy_camera::visibility::RenderLayers;
 use bevy_color::{Color, Hsla, Hsva, Lcha, LinearRgba, Srgba};
 use bevy_ecs::entity::Entity;
 use bevy_ecs::world::CommandQueue;
 use bevy_ecs::world::World;
+#[cfg(feature = "bevy_render")]
+use bevy_mesh::Mesh;
 use egui::Color32;
 use std::any::Any;
 
 #[cfg(feature = "bevy_render")]
 use ::{
-    bevy_asset::Assets, bevy_asset::Handle, bevy_render::mesh::Mesh,
-    bevy_render::view::RenderLayers,
+    bevy_asset::Assets, bevy_asset::Handle,
 };
 
 #[cfg(feature = "bevy_render")]
@@ -169,10 +172,12 @@ fn mesh_ui_inner(mesh: &Mesh, ui: &mut egui::Ui) {
         ui.end_row();
 
         if let Some(indices) = mesh.indices() {
+            use bevy_mesh::Indices;
+
             ui.label("Indices");
             let len = match indices {
-                bevy_render::mesh::Indices::U16(vec) => vec.len(),
-                bevy_render::mesh::Indices::U32(vec) => vec.len(),
+                Indices::U16(vec) => vec.len(),
+                Indices::U32(vec) => vec.len(),
             };
             ui.label(len.to_string());
             ui.end_row();

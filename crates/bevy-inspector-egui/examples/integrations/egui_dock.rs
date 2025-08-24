@@ -4,7 +4,6 @@ use bevy::{
     asset::{ReflectAsset, UntypedAssetId},
     prelude::*,
     reflect::TypeRegistry,
-    render::camera::Viewport,
 };
 use bevy_egui::EguiGlobalSettings;
 use bevy_inspector_egui::{
@@ -17,7 +16,6 @@ use bevy_inspector_egui::{
     },
 };
 
-use bevy_render::view::RenderLayers;
 use bevy_window::PrimaryWindow;
 use egui_dock::{DockArea, DockState, NodeIndex, Style};
 // use transform_gizmo_egui::{Gizmo, GizmoConfig, GizmoExt, GizmoOrientation};
